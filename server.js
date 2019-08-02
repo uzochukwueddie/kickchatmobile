@@ -72,5 +72,3 @@ app.use('/api', reset);
 server.listen(process.env.PORT || 3000, function() {
     console.log('kickchatapp running on port 3000');
 });
-
-module.exports.handler = serverless(app);
