@@ -96,5 +96,45 @@ module.exports = {
         .catch(err => {
           return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
         });
+    },
+
+    async loginWithFacebook(req, res) {
+      try {
+        console.log(req.body);
+        const name = req.body.name.split(' ');
+        const email = req.body.email.split('@');
+        let username;
+
+        const checkUsername = await User.findOne({username: Helpers.firstUpper(name[0])});
+        if (checkUsername) {
+            username = Helpers.firstUpper(name[1]) || Helpers.firstUpper(email[0]);
+        } else {
+            username = Helpers.firstUpper(name[0]);
+        }
+        const newUser = new User();
+        newUser.facebook = req.body.id;
+        newUser.username = username;
+        newUser.email = req.body.email;
+        newUser.fbToken = req.body.accessToken;
+
+        console.log(newUser);
+
+        newUser.save((err, response) => {
+          console.log(response);
+          if(err){
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+          }
+          const userData = {
+            _id: response._id,
+            username: response.username
+          }
+          const token = jwt.sign({ data: userData }, process.env.JWT_SECRET, {});
+          res.status(HttpStatus.CREATED).json({ message: 'User created successfully', token, username: response.username });
+          
+        });
+      } catch (err) {
+        console.log(err);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+      }
     }
 }

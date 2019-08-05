@@ -17,6 +17,10 @@ module.exports = function(io, User, _) {
             callback();
         });
 
+        socket.on('groupPage', () => {
+            io.emit('refreshGroupPage', {});
+        });
+
         socket.on('createMessage', (message) => {
             io.to(message.room).emit('newMessage', {
                 text: message.text,
@@ -34,12 +38,12 @@ module.exports = function(io, User, _) {
             });
         });
         
-        socket.on('request', (friend) => {
-            io.to(friend.receiver).emit('newFriend', {
-               from: friend.sender,
-               to: friend.receiver
-            }); 
-        });
+        // socket.on('request', (friend) => {
+        //     io.to(friend.receiver).emit('newFriend', {
+        //        from: friend.sender,
+        //        to: friend.receiver
+        //     }); 
+        // });
 
         socket.on('disconnect', () => {
             const user = users.RemoveUser(socket.id);

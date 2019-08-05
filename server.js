@@ -11,6 +11,7 @@ const passport = require('passport');
 require('dotenv').config();
 
 const { User } = require('./helpers/userClass');
+const { Global } = require('./helpers/globalRoom');
 const admin = require('./controllers/adminCtrl');
 const index = require('./controllers/indexCtrl');
 
@@ -38,14 +39,17 @@ const io = require('socket.io')(server);
 
 app.use(cors());
 
-require('./socket/streams')(io, User, _);
+require('./socket/global')(io, Global, _);
+// require('./socket/streams')(io, User, _);
 require('./socket/groupchat')(io, User, _);
 require('./socket/private')(io);
+require('./socket/poststream')(io);
+require('./socket/profileImg')(io);
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI, 
-{ useNewUrlParser: true});
+// mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true});
+mongoose.connect('mongodb://localhost/chatapp', { useNewUrlParser: true});
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
