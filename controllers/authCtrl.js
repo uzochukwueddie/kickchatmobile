@@ -100,40 +100,92 @@ module.exports = {
 
     async loginWithFacebook(req, res) {
       try {
-        console.log(req.body);
-        const name = req.body.name.split(' ');
-        const email = req.body.email.split('@');
-        let username;
-
-        const checkUsername = await User.findOne({username: Helpers.firstUpper(name[0])});
-        if (checkUsername) {
-            username = Helpers.firstUpper(name[1]) || Helpers.firstUpper(email[0]);
-        } else {
-            username = Helpers.firstUpper(name[0]);
-        }
-        const newUser = new User();
-        newUser.facebook = req.body.id;
-        newUser.username = username;
-        newUser.email = req.body.email;
-        newUser.fbToken = req.body.accessToken;
-
-        console.log(newUser);
-
-        newUser.save((err, response) => {
-          console.log(response);
-          if(err){
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
-          }
+        const user = await User.findOne({facebook: req.body.id});
+        if (user) {
           const userData = {
-            _id: response._id,
-            username: response.username
+            _id: user._id,
+            username: user.username
           }
           const token = jwt.sign({ data: userData }, process.env.JWT_SECRET, {});
-          res.status(HttpStatus.CREATED).json({ message: 'User created successfully', token, username: response.username });
-          
-        });
+          return res.status(HttpStatus.CREATED).json({ message: 'Login successfull', token, username: user.username });
+        } else {
+          const name = req.body.name.split(' ');
+          const email = req.body.email.split('@');
+          let username;
+  
+          const checkUsername = await User.findOne({username: Helpers.firstUpper(name[0])});
+          if (checkUsername) {
+              username = Helpers.firstUpper(name[1]) || Helpers.firstUpper(email[0]);
+          } else {
+              username = Helpers.firstUpper(name[0]);
+          }
+          const newUser = new User();
+          newUser.facebook = req.body.id;
+          newUser.username = username;
+          newUser.email = req.body.email;
+          newUser.fbToken = req.body.accessToken;
+          newUser.fbImage = req.body.imageUrl;
+  
+          newUser.save((err, response) => {
+            if(err){
+              return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+            }
+            const userData = {
+              _id: response._id,
+              username: response.username
+            }
+            const token = jwt.sign({ data: userData }, process.env.JWT_SECRET, {});
+            res.status(HttpStatus.CREATED).json({ message: 'User created successfully', token, username: response.username });
+            
+          });
+        }
       } catch (err) {
-        console.log(err);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+      }
+    },
+
+    async loginWithGoogle(req, res) {
+      try {
+        const user = await User.findOne({google: req.body.id});
+        if (user) {
+          const userData = {
+            _id: user._id,
+            username: user.username
+          }
+          const token = jwt.sign({ data: userData }, process.env.JWT_SECRET, {});
+          return res.status(HttpStatus.CREATED).json({ message: 'Login successfull', token, username: user.username });
+        } else {
+          const name = req.body.name.split(' ');
+          const email = req.body.email.split('@');
+          let username;
+  
+          const checkUsername = await User.findOne({username: Helpers.firstUpper(name[0])});
+          if (checkUsername) {
+              username = Helpers.firstUpper(name[1]) || Helpers.firstUpper(email[0]);
+          } else {
+              username = Helpers.firstUpper(name[0]);
+          }
+          const newUser = new User();
+          newUser.google = req.body.id;
+          newUser.username = username;
+          newUser.email = req.body.email;
+          newUser.googleToken = req.body.accessToken;
+          newUser.googleImage = req.body.imageUrl;
+  
+          newUser.save((err, response) => {
+            if(err){
+              return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+            }
+            const userData = {
+              _id: response._id,
+              username: response.username
+            }
+            const token = jwt.sign({ data: userData }, process.env.JWT_SECRET, {});
+            res.status(HttpStatus.CREATED).json({ message: 'User created successfully', token, username: response.username });
+            
+          });
+        }
+      } catch (err) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
       }
     }

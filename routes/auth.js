@@ -13,6 +13,7 @@ const successUrl = 'http://localhost:8100/kickchat/streams';
 router.post('/register', AuthCtrl.createUser);
 router.post('/login', AuthCtrl.loginUser);
 router.post('/login-facebook', AuthCtrl.loginWithFacebook);
+router.post('/login-google', AuthCtrl.loginWithGoogle);
 
 router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/auth/google/callback", passport.authenticate("google", 

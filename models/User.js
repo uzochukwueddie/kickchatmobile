@@ -7,8 +7,10 @@ const userSchema = mongoose.Schema({
     password: { type: String },
     facebook: {type: String, default: ''},
     fbToken: {type: String, default: ''},
+    fbImage: {type: String, default: ''},
     google: {type: String, default: ''},
     googleToken: {type: String, default: ''},
+    googleImage: {type: String, default: ''},
     posts: [
         {
             postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
