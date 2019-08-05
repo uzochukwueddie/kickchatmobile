@@ -48,8 +48,8 @@ require('./socket/profileImg')(io);
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
-// mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true});
-mongoose.connect('mongodb://localhost/chatapp', { useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true});
+// mongoose.connect('mongodb://localhost/chatapp', { useNewUrlParser: true});
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
