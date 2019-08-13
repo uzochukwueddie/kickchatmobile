@@ -5,22 +5,19 @@ module.exports = function(io) {
         });
         
         socket.on('streamMessage', (message) => {
-            io.emit('new stream', {
-                post: message.text,
-                user: message.sender,
-                msg: message.post,
-                isUser: true,
-                sender: message.sender.username
-            });
-            // io.emit('refreshPage', {});
+            io.emit('new stream', message);
         });
 
         socket.on('postRefresh', () => {
             io.emit('refreshUserPostPage', {});
         });
 
-        socket.on('likeRefresh', () => {
-            io.emit('likeRefreshPage', {});
+        socket.on('likeRefresh', (data) => {
+            io.emit('likeRefreshPage', data);
+        });
+
+        socket.on('deletePost', (data) => {
+            io.emit('removeDeletedPost', data);
         });
         
         socket.on('post-img', (message) => {

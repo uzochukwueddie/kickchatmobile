@@ -371,5 +371,22 @@ module.exports = {
     } catch (e) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
     }
+  },
+
+  async addUserLocation(req, res) {
+    try {
+      await User.updateOne(
+        {
+          _id: req.user._id
+        },
+        {
+          city: req.body.city,
+          country: req.body.country
+        }
+      );
+      res.status(HttpStatus.OK).json({ message: 'Added' });
+    } catch (e) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+    }
   }
 }

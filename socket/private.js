@@ -7,20 +7,14 @@ module.exports = function(io) {
         socket.room = params.receiver;
       });
 
-      socket.on('chatList', params => {
-        socket.join(params.sender);
-        socket.join(params.receiver);
-
-        io.to(params.username).to(params.receiver).emit('chatListPage', {
-          sender: params.sender,
-          receiver: params.receiver
-        });
+      socket.on('private message', (message) => {
+        socket.join(message.sender);
+        socket.join(message.receiver);
+        io.to(message.sender).to(message.receiver).emit('new chat message', message);
       });
 
-      socket.on('privatePage', (receiver, message) => {
-        if(socket.room === receiver){
-          io.to(message.room).emit('refreshChatPage', {receiver});
-        }
+      socket.on('chat list', (message) => {
+        io.emit('new chat list', message);
       });
 
       // socket.on('privatePage', () => {

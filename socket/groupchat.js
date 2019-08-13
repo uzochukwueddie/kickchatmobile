@@ -22,20 +22,11 @@ module.exports = function(io, User, _) {
         });
 
         socket.on('createMessage', (message) => {
-            io.to(message.room).emit('newMessage', {
-                text: message.text,
-                room: message.room,
-                from: message.sender
-            });
+            io.to(message.room).emit('newGroupMessage', message);
         });
         
         socket.on('add-image', (message) => {
-            io.to(message.room).emit('newMessage', {
-                text: message.text,
-                room: message.room,
-                from: message.sender,
-                image: message.image
-            });
+            io.to(message.room).emit('newGroupMessage', message);
         });
         
         // socket.on('request', (friend) => {

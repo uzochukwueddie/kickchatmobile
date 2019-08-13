@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema({
     google: {type: String, default: ''},
     googleToken: {type: String, default: ''},
     googleImage: {type: String, default: ''},
+    changedSocialImage: {type: Boolean, default: false},
     posts: [
         {
             postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
@@ -45,21 +46,6 @@ const userSchema = mongoose.Schema({
             msgId: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' }
         }
     ],
-    sentRequest: [{ // remove
-        username: {type: String, default: ''}
-    }],
-    request: [{// remove
-        username: {type: String, default: ''},
-        senderId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
-    }],
-    friends: [{// remove
-        name: {type: String, default: ''},
-        friendId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
-    }],
-    notFriends: [{// remove
-        name: {type: String, default: ''},
-        friendId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
-    }],
     imageVersion: { type: String, default: '1521534486' },
     userImage: { type: String, default: 'defaultPic.png' },
     images: [

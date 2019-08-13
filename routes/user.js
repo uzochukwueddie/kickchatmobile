@@ -25,5 +25,6 @@ router.post('/change-password', AuthHelper.VerifyToken, UserCtrl.changePassword)
 router.post('/user/view-profile', AuthHelper.VerifyToken, UserCtrl.profileViewCount);
 router.post('/mark-all', AuthHelper.VerifyToken, UserCtrl.markAllNotifications);
 router.post('/mark/:id', AuthHelper.VerifyToken, UserCtrl.markNotification);
+router.post('/add-city-country', AuthHelper.VerifyToken, UserCtrl.addUserLocation);
 
 module.exports = router;

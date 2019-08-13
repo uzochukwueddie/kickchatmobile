@@ -10,11 +10,18 @@
 <body>
     <form action="/admin/dashboard" method="post">
         <input type="text" name="club" placeholder="Club Name">
-        <input type="text" name="country" placeholder="Country">
+        <!-- <input type="text" name="country" placeholder="Country"> -->
+        <select name="country">
+            <option value="England">England</option>
+            <option value="Spain">Spain</option>
+            <option value="Germany">Germany</option>
+            <option value="Italy">Italy</option>
+            <option value="France">France</option>
+        </select>
         
         <input type="file" name="upload" id="upload-input" style="display:block">
         
-        <button>Add Group</button>
+        <button>Add Club</button>
             
     </form>
     

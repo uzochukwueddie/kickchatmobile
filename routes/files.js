@@ -12,8 +12,7 @@ router.post('/chat-image/:receiverId',
     AuthHelper.VerifyToken,
     FileCtrl.privateChatFile
 );
-// router.post('/v1/private/upload', fileCtrl.privateChat);
-// router.post('/v1/profile/image/:username', fileCtrl.profileImage);
+router.post('/profile/image', AuthHelper.VerifyToken, FileCtrl.addProfileImage);
 
 
 

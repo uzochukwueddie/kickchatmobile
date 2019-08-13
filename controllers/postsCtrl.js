@@ -2,7 +2,6 @@ const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
 const cloudinary = require('cloudinary');
 const moment = require('moment');
-const request = require('request');
 
 const Post = require('../models/Post');
 const User = require('../models/User');
@@ -107,27 +106,8 @@ module.exports = {
             totalLikes: { $gte: 2 }
             // created: { $gte: today.toDate(), $lt: tomorrow.toDate() }
           })
-            .populate('user')
-            .sort({ created: -1 });
-    
-          const user = await User.findOne({ _id: req.user._id });
-          if (user.city === '' && user.country === '') {
-            request(
-              process.env.GEO_IP,
-              { json: true },
-              async (err, res, body) => {
-                await User.updateOne(
-                  {
-                    _id: req.user._id
-                  },
-                  {
-                    city: body.city,
-                    country: body.country_name
-                  }
-                );
-              }
-            );
-          }
+          .populate('user')
+          .sort({ created: -1 });
           return res.status(HttpStatus.OK).json({ message: 'All posts', posts, top });
         } catch (err) {
           return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
@@ -149,13 +129,12 @@ module.exports = {
           $inc: { totalLikes: 1 }
         }
       )
-        .then(() => {
-          res.status(HttpStatus.OK).json({ message: 'You liked the post' });
+        .then(async () => {
+          const post = await Post.findOne({_id: req.body.id});
+          return res.status(HttpStatus.OK).json({ message: 'You liked the post', likedPost: post });
         })
         .catch(err =>
-          res
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json({ message: 'Error occured' })
+          res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' })
         );
     },
   
@@ -188,7 +167,7 @@ module.exports = {
       await Post.findOne({ _id: req.params.id })
         .populate('user')
         .populate('comments.userId')
-        .populate('likes.userId')
+        // .populate('likes.userId')
         .then(post => {
           res.status(HttpStatus.OK).json({ message: 'Post found', post });
         })

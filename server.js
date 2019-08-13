@@ -23,14 +23,17 @@ const rooms = require('./routes/rooms');
 const group = require('./routes/groupchat');
 const friends = require('./routes/friends');
 const profile = require('./routes/profile');
+const clubs = require('./routes/clubs');
 const files = require('./routes/files');
 const messages = require('./routes/messages');
 const reset = require('./routes/reset');
+const responseTime = require('response-time');
 
 const app = express();
 
 app.use(compression());
 app.use(helmet());
+app.use(responseTime());
 
 app.use(favicon(path.join(__dirname, 'public/img', 'favicon.ico')));
 
@@ -48,8 +51,8 @@ require('./socket/profileImg')(io);
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true});
-// mongoose.connect('mongodb://localhost/chatapp', { useNewUrlParser: true});
+// mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true});
+mongoose.connect('mongodb://localhost/chatapp', { useNewUrlParser: true});
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
@@ -72,7 +75,8 @@ app.use('/api', profile);
 app.use('/api', files);
 app.use('/api', messages);
 app.use('/api', reset);
+app.use('/api', clubs);
 
 server.listen(process.env.PORT || 3000, function() {
-    console.log('kickchatapp running on port 3000');
+    console.log(`kickchatapi listening on port ${process.env.PORT || 3000}`);
 });

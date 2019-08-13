@@ -1,12 +1,22 @@
+const UserModel = require('../models/User');
+
 module.exports = (io, Global, _) => {
     const global = new Global()
     
     io.on('connection', (socket) => {
-        socket.on('online', (params) => {
-            if(typeof params.user !== undefined){
+        socket.on('online', async (params) => {
+            if(typeof params.username !== undefined) {
                 socket.join(params.room);
-                global.EnterRoom(socket.id, params.user, params.room)
-                io.emit('userOnline', _.uniq(global.GetRoomList(params.room)))
+                await UserModel.updateOne({
+                    username: params.username
+                }, {
+                    lastVisited: new Date(),
+                    socketId: socket.id
+                });
+                global.EnterRoom(socket.id, params.username, params.room);
+                const uniqArray = _.uniq(global.GetRoomList(params.room));
+                const withoutUndefined = _.without(uniqArray, undefined);
+                io.emit('usersOnline', withoutUndefined);
             }
         });
         
@@ -36,28 +46,27 @@ module.exports = (io, Global, _) => {
             }); 
         });
 
-        // ..........
-        
-        socket.on('myonline', (data) => {
-            io.emit('userOnline', _.uniq(global.GetRoomList(data.room)));
+        socket.on('profile image', (data) => {
+            io.emit('image show', data); 
+        });
+
+        socket.on('favorites', (data) => {
+            io.emit('refresh favorites', data); 
         });
         
-        socket.on('profile-img', (profile) => {
-            io.emit('profile image', {
-                image: profile.image
-            })
-        });
-        
-        socket.on('disconnect', () => {
+        socket.on('disconnect', async () => {
             const user = global.RemoveUser(socket.id);
             
             if(user){
-                var userData = global.GetRoomList(user.room);
+                await UserModel.updateOne({
+                    username: user.name
+                }, {
+                    lastVisited: new Date()
+                });
+                const userData = global.GetRoomList(user.room);
                 const arr = _.uniq(userData);
-                const removeData = _.remove(arr, function(n) {
-                                      return n == user.name
-                                    });
-                io.to(user.room).emit('userOnline', arr);
+                _.remove(arr, (n) => n == user.name);
+                io.to(user.room).emit('usersOnline', arr);
             }
         })
     
