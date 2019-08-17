@@ -7,11 +7,13 @@ const ClubCtrl = require('../controllers/clubCtrl');
 const ClubMessageCtrl = require('../controllers/clubsMessageCtrl');
 const AuthHelper = require('../helpers/authHelper');
 
+router.get('/get-all-clubs', AuthHelper.VerifyToken, ClubCtrl.getAllClubs);
 router.get('/club/England', AuthHelper.VerifyToken, ClubCtrl.getEnglishClubs);
 router.get('/club/Spain', AuthHelper.VerifyToken, ClubCtrl.getSpanishClubs);
 router.get('/club/Italy', AuthHelper.VerifyToken, ClubCtrl.getItalianClubs);
 router.get('/club/Germany', AuthHelper.VerifyToken, ClubCtrl.getGermanClubs);
 router.get('/club/France', AuthHelper.VerifyToken, ClubCtrl.getFrenchClubs);
+router.get('/get-room-data/:country/:room', AuthHelper.VerifyToken, ClubCtrl.getRoomData);
 
 router.get('/club-messages/:country/:club', AuthHelper.VerifyToken, ClubMessageCtrl.getClubMessages);
 // router.get('/club-messages/Spain', AuthHelper.VerifyToken, ClubCtrl.getSpanishClubs);

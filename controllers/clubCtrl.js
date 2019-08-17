@@ -1,4 +1,5 @@
 const HttpStatus = require('http-status-codes');
+const _ = require('lodash');
 
 const User = require('../models/User');
 const Epl = require('../models/EPL');
@@ -14,6 +15,20 @@ const LaligaChat = require('../models/LaligaChat');
 const Ligue1Chat = require('../models/Ligue1Chat');
 
 module.exports = {
+    async getAllClubs(req, res) {
+        try {
+            const rooms_1 = await Epl.find({});
+            const rooms_2 = await Laliga.find({});
+            const rooms_3 = await Bundesliga.find({});
+            const rooms_4 = await Ligue1.find({});
+            const rooms_5 = await Seria.find({});
+            const rooms = _.concat(rooms_1, rooms_2, rooms_3, rooms_4, rooms_5);
+            res.status(HttpStatus.OK).json({ message: 'All rooms', rooms });
+        } catch (err) {
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+        }
+    },
+
     async getEnglishClubs(req, res) {
         try {
             const rooms = await Epl.find({})
@@ -112,6 +127,35 @@ module.exports = {
         }
     },
 
+    async getRoomData(req, res) {
+        try {
+            if (req.params.country === 'England') {
+                const room = await Epl.findOne({name: req.params.room.replace(/-/g, ' ')});
+                return res.status(HttpStatus.OK).json({message: `${req.params.room.replace(/-/g, ' ')} data`, room});
+            }
+            if (req.params.country === 'Spain') {
+                const room = await Laliga.findOne({name: req.params.room.replace(/-/g, ' ')});
+                return res.status(HttpStatus.OK).json({message: `${req.params.room.replace(/-/g, ' ')} data`, room});
+            }
+            if (req.params.country === 'France') {
+                const room = await Ligue1.findOne({name: req.params.room.replace(/-/g, ' ')});
+                return res.status(HttpStatus.OK).json({message: `${req.params.room.replace(/-/g, ' ')} data`, room});
+            }
+            if (req.params.country === 'Germany') {
+                const room = await Bundesliga.findOne({name: req.params.room.replace(/-/g, ' ')});
+                return res.status(HttpStatus.OK).json({message: `${req.params.room.replace(/-/g, ' ')} data`, room});
+            }
+            if (req.params.country === 'Italy') {
+                const room = await Seria.findOne({name: req.params.room.replace(/-/g, ' ')});
+                return res.status(HttpStatus.OK).json({message: `${req.params.room.replace(/-/g, ' ')} data`, room});
+            }
+            
+        } catch (err) {
+            console.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+        }
+    },
+
     async addToFavorites(req, res) {
         try {
             if (req.body.country === 'England') {
@@ -126,9 +170,12 @@ module.exports = {
                 
                 await User.updateOne({
                     '_id': req.user._id,
-                    'favClub': {$ne: req.body.room}
+                    'favClub.club': {$ne: req.body.room}
                 }, {
-                    $push: {favClub: req.body.room}
+                    $push: {favClub: {
+                        club: req.body.room,
+                        country: req.body.country
+                    }}
                 });
                 const room = await Epl.findOne({_id: req.body.roomId});
                 return res.status(HttpStatus.OK).json({message: `${req.body.room} has been added to favorite`, room});
@@ -145,9 +192,12 @@ module.exports = {
                 
                 await User.updateOne({
                     '_id': req.user._id,
-                    'favClub': {$ne: req.body.room}
+                    'favClub.club': {$ne: req.body.room}
                 }, {
-                    $push: {favClub: req.body.room}
+                    $push: {favClub: {
+                        club: req.body.room,
+                        country: req.body.country
+                    }}
                 });
                 const room = await Laliga.findOne({_id: req.body.roomId});
                 return res.status(HttpStatus.OK).json({message: `${req.body.room} has been added to favorite`, room});
@@ -164,9 +214,12 @@ module.exports = {
                 
                 await User.updateOne({
                     '_id': req.user._id,
-                    'favClub': {$ne: req.body.room}
+                    'favClub.club': {$ne: req.body.room}
                 }, {
-                    $push: {favClub: req.body.room}
+                    $push: {favClub: {
+                        club: req.body.room,
+                        country: req.body.country
+                    }}
                 });
                 const room = await Ligue1.findOne({_id: req.body.roomId});
                 return res.status(HttpStatus.OK).json({message: `${req.body.room} has been added to favorite`, room});
@@ -183,9 +236,12 @@ module.exports = {
                 
                 await User.updateOne({
                     '_id': req.user._id,
-                    'favClub': {$ne: req.body.room}
+                    'favClub.club': {$ne: req.body.room}
                 }, {
-                    $push: {favClub: req.body.room}
+                    $push: {favClub: {
+                        club: req.body.room,
+                        country: req.body.country
+                    }}
                 });
                 const room = await Bundesliga.findOne({_id: req.body.roomId});
                 return res.status(HttpStatus.OK).json({message: `${req.body.room} has been added to favorite`, room});
@@ -202,16 +258,18 @@ module.exports = {
                 
                 await User.updateOne({
                     '_id': req.user._id,
-                    'favClub': {$ne: req.body.room}
+                    'favClub.club': {$ne: req.body.room}
                 }, {
-                    $push: {favClub: req.body.room}
+                    $push: {favClub: {
+                        club: req.body.room,
+                        country: req.body.country
+                    }}
                 });
                 const room = await Seria.findOne({_id: req.body.roomId});
                 return res.status(HttpStatus.OK).json({message: `${req.body.room} has been added to favorite`, room});
             }
             
         } catch (err) {
-            console.log(err);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
         }
     },

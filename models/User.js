@@ -71,7 +71,12 @@ const userSchema = mongoose.Schema({
         }
     ],
     totalRequest: {type: Number, default: 0},
-    favClub: [],
+    favClub: [
+        {
+            club: {type: String, default: '' },
+            country: { type: String, default: '' }
+        }
+    ],
     favTeams: [],
     favPlayers: [],
     coords: {

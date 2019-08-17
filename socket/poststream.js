@@ -8,6 +8,14 @@ module.exports = function(io) {
             io.emit('new stream', message);
         });
 
+        socket.on('edit message', (message) => {
+            io.emit('edited stream', message);
+        });
+
+        socket.on('post stream', (message) => {
+            io.emit('new post stream', message);
+        });
+
         socket.on('postRefresh', () => {
             io.emit('refreshUserPostPage', {});
         });
