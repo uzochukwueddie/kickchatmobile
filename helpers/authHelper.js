@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
 const HttpStatus = require('http-status-codes');
+const Verifier = require("email-verifier");
+
+let verifier = new Verifier(process.env.EMAIL_VERIFY_API);
 
 module.exports = {
   VerifyToken: (req, res, next) => {
@@ -19,5 +22,19 @@ module.exports = {
     } catch (err) {
         res.status(401).json({ msg: 'Token is not valid' });
     }
+  },
+
+  verifyEmail: (req, res, next) => {
+    verifier.verify(req.body.email, (err, data) => {
+      try {
+        if (data.smtpCheck === false || data.disposableCheck === true) {
+          return res.status(HttpStatus.BAD_REQUEST).json({ message: `${req.body.email} is invalid. Please provide a valid email to continue.`, msgData: data });
+        } else {
+          next();
+        }
+      } catch (err) {
+        res.status(401).json({ message: 'Error occurred while signing up. Please try again.' });
+      }
+    });
   }
 };

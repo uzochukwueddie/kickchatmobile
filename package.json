@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "ejs": "^2.6.2",
+    "email-verifier": "^0.4.1",
     "express": "^4.17.1",
     "helmet": "^3.19.0",
     "html-to-text": "^5.1.1",
