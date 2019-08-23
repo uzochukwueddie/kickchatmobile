@@ -118,7 +118,7 @@ module.exports = {
       await Post.updateOne(
         {
           _id: req.body.id,
-          // 'likes.userId': { $ne: req.user._id }
+          'likes.userId': { $ne: req.user._id }
         },
         {
           $push: {

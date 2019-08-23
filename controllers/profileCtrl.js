@@ -14,16 +14,28 @@ const Helpers = require('../helpers/helpers');
 module.exports = {
     async addProfile(req, res) {        
         try {
+            const club = req.body.club.split('-');
             const user = await User.updateOne({
                 _id: req.user._id
             }, {
                 username: req.body.username,
                 country: req.body.country,
                 mantra: req.body.mantra,
-                club: req.body.club,
+                club: club[0],
                 gender: req.body.gender,
                 city: req.body.city
             });
+
+            await User.updateOne({
+                _id: req.user._id,
+                'favClub.club': {$ne: club[0]}
+            }, {
+                $push: {favClub: {
+                    club: club[0],
+                    country: club[1]
+                }}
+            });
+            Helpers.updateRoomsArray(req, club[0], club[1]);
 
             const userData = {
                 _id: req.user._id,
@@ -62,7 +74,7 @@ module.exports = {
                             country: room.country
                         }}
                     }); 
-                    Helpers.updateRoomsArray(req, room.club, room.country)
+                    Helpers.updateRoomsArray(req, room.club, room.country);
                 });
             }
 
