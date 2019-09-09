@@ -89,7 +89,9 @@ const userSchema = mongoose.Schema({
     joined: {type: Date, default: Date.now},
     lastVisited: {type: Date, default: Date.now},
     online: { type: Boolean, default: false },
-    socketId: {type: String, default: ''}
+    socketId: {type: String, default: ''},
+    dreamTeam: [],
+    formation: {type: String, default: ''},
 });
 
 userSchema.statics.encryptPassword = async function(password) {

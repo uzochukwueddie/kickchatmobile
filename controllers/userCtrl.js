@@ -2,6 +2,7 @@ const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
+const _ = require('lodash');
 
 const User = require('../models/User');
 
@@ -385,6 +386,36 @@ module.exports = {
         }
       );
       res.status(HttpStatus.OK).json({ message: 'Added' });
+    } catch (e) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+    }
+  },
+
+  async saveDreamTeam(req, res) {
+    try {
+      const user = await User.findOne({_id: req.user._id});
+      if (user.dreamTeam.length > 0) {
+        await User.updateOne({
+          _id: req.user._id,
+        }, {
+          "$set": {dreamTeam: []},
+          formation: ''
+        });
+        await User.updateOne({
+          _id: req.user._id,
+        }, {
+          $push: { dreamTeam: { $each: req.body.players } },
+          formation: req.body.formation
+        });
+      } else {
+        await User.updateOne({
+          _id: req.user._id,
+        }, {
+          $push: { dreamTeam: { $each: req.body.players } },
+          formation: req.body.formation
+        }); 
+      }
+      return res.status(HttpStatus.OK).json({ message: 'Players Saved' });
     } catch (e) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
     }

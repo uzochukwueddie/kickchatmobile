@@ -26,5 +26,6 @@ router.post('/user/view-profile', AuthHelper.VerifyToken, UserCtrl.profileViewCo
 router.post('/mark-all', AuthHelper.VerifyToken, UserCtrl.markAllNotifications);
 router.post('/mark/:id', AuthHelper.VerifyToken, UserCtrl.markNotification);
 router.post('/add-city-country', AuthHelper.VerifyToken, UserCtrl.addUserLocation);
+router.post('/dream-team', AuthHelper.VerifyToken, UserCtrl.saveDreamTeam);
 
 module.exports = router;
