@@ -147,5 +147,54 @@ module.exports = {
         }}
       });
     }
+  },
+
+  getVideosUrl: (videos) => {
+    const iframeArray = [];
+    let i;
+    for (i = 0; i < videos.length; i++) {
+      const title = videos[i].title.split('-');
+      const videosObj = {
+        team1: title[0],
+        team2: title[1],
+        link: videos[i].embed.split('<script>')[0]
+      }
+      iframeArray.push(videosObj);
+    }
+
+    const srcArray = [];
+    let j;
+    for (j = 0; j < iframeArray.length; j++) {
+      const videosObj = {
+        team1: iframeArray[j].team1,
+        team2: iframeArray[j].team2,
+        link: iframeArray[j].link.split("src='")[1]
+      }
+      srcArray.push(videosObj);
+    }
+
+    const frameBorderArray = [];
+    let k;
+    for (k = 0; k < srcArray.length; k++) {
+      const videosObj = {
+        team1: srcArray[k].team1,
+        team2: srcArray[k].team2,
+        link: srcArray[k].link.split('frameborder')[0]
+      }
+      frameBorderArray.push(videosObj);
+    }
+
+    const urlObj = [];
+    let kk;
+    for (kk = 0; kk < frameBorderArray.length; kk++) {
+      const videosObj = {
+        team1: frameBorderArray[kk].team1,
+        team2: frameBorderArray[kk].team2,
+        link: frameBorderArray[kk].link.split("'")[0]
+      }
+      urlObj.push(videosObj);
+    }
+    return urlObj;
   }
+
 };

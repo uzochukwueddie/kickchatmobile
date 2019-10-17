@@ -11,15 +11,12 @@ module.exports = function(io) {
         socket.join(message.sender);
         socket.join(message.receiver);
         io.to(message.sender).to(message.receiver).emit('new chat message', message);
+        io.emit('trigger notification', message);
       });
 
       socket.on('chat list', (message) => {
         io.emit('new chat list', message);
       });
-
-      // socket.on('privatePage', () => {
-      //   io.emit('refreshChatPage', {});
-      // });
   
       socket.on('start_typing', data => {
         io.to(data.receiver).emit('is_typing', data);

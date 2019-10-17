@@ -27,6 +27,7 @@ const clubs = require('./routes/clubs');
 const files = require('./routes/files');
 const messages = require('./routes/messages');
 const reset = require('./routes/reset');
+const videos = require('./routes/videos');
 const responseTime = require('response-time');
 
 const app = express();
@@ -76,6 +77,7 @@ app.use('/api', files);
 app.use('/api', messages);
 app.use('/api', reset);
 app.use('/api', clubs);
+app.use('/api', videos);
 
 server.listen(process.env.PORT || 3000, function() {
     console.log(`kickchatapi listening on port ${process.env.PORT || 3000}`);
