@@ -5,7 +5,7 @@ const VideosCtrl = require('../controllers/videosCtrl');
 const AuthHelper = require('../helpers/authHelper');
 
 router.get('/search-videos', AuthHelper.VerifyToken, VideosCtrl.getVideos);
-router.post('/search-videosn', VideosCtrl.getVideosUrl);
+router.post('/search-videos', VideosCtrl.getVideosUrl);
 
 
 module.exports = router;
