@@ -35,6 +35,7 @@ const userSchema = mongoose.Schema({
             senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
             message: { type: String },
             viewProfile: { type: Boolean, default: false },
+            likedPost: { type: Boolean, default: false },
             created: { type: Date, default: Date.now() },
             read: { type: Boolean, default: false },
             date: { type: String, default: '' }
