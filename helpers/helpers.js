@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const User = require('../models/User');
 const Epl = require('../models/EPL');
 const Laliga = require('../models/Laliga');
@@ -195,6 +197,33 @@ module.exports = {
       urlObj.push(videosObj);
     }
     return urlObj;
+  },
+
+  sendUserNotification: async (req) => {
+    const user = await User.findOne({_id: req.user._id});
+    user.followers.forEach(async val => {
+      const dateValue = moment().format('YYYY-MM-DD');
+      const notifications = {
+        senderId: req.user._id,
+        message: `${req.user.username} added a post.`,
+        created: new Date(),
+        date: dateValue,
+        viewProfile: true
+      }
+      if (val.blocked === false) {
+        await User.updateOne(
+          {
+            _id: val.follower
+          },
+          {
+            $push: {
+              notifications
+            }
+          }
+        );
+      }
+
+    });
   }
 
 };

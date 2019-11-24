@@ -14,6 +14,12 @@ module.exports = function(io) {
         io.emit('trigger notification', message);
       });
 
+      socket.on('private gif', (message) => {
+        socket.join(message.sender);
+        socket.join(message.receiver);
+        io.to(message.sender).to(message.receiver).emit('new chat message gif', message);
+      });
+
       socket.on('chat list', (message) => {
         io.emit('new chat list', message);
       });

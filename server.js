@@ -53,6 +53,7 @@ require('./socket/profileImg')(io);
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true});
+// mongoose.connect(`mongodb://${process.env.DEV_DB_USER}:${process.env.DEV_DB_PASS}@ds053307.mlab.com:53307/kickchatdev`, { useNewUrlParser: true});
 // mongoose.connect('mongodb://localhost/chatapp', { useNewUrlParser: true});
 
 app.use(express.static('public'));

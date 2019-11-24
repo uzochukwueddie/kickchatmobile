@@ -5,6 +5,7 @@ const moment = require('moment');
 
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Helpers = require('../helpers/helpers');
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -15,7 +16,7 @@ cloudinary.config({
 module.exports = {
     async addPost(req, res) {
         const schema = Joi.object().keys({
-            post: Joi.string().required()
+            post: Joi.string().optional()
         });
         const body = {
             post: req.body.post
@@ -47,6 +48,7 @@ module.exports = {
                     }
                   }
                 );
+                Helpers.sendUserNotification(req);
                 res.status(HttpStatus.OK).json({ message: 'Post created', post });
               })
               .catch(err => {
@@ -82,6 +84,7 @@ module.exports = {
                       }
                     }
                   );
+                  Helpers.sendUserNotification(req);
                   res.status(HttpStatus.OK).json({ message: 'Post created', post });
                 })
                 .catch(err => {
@@ -89,6 +92,38 @@ module.exports = {
                 });
             });
         }
+
+        if (!req.body.post && req.body.image) {
+          cloudinary.uploader.upload(req.body.image, async result => {
+            const reqBody = {
+              user: req.user._id,
+              imgId: result.public_id,
+              imgVersion: result.version,
+              created: new Date()
+            };
+            Post.create(reqBody)
+              .then(async post => {
+                await User.updateOne(
+                  {
+                    _id: req.user._id
+                  },
+                  {
+                    $push: {
+                      images: {
+                          imgId: result.public_id,
+                          imgVersion: result.version
+                      }
+                    }
+                  }
+                );
+                Helpers.sendUserNotification(req);
+                res.status(HttpStatus.OK).json({ message: 'Post created', post });
+              })
+              .catch(err => {
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+              });
+          });
+      }
     },
 
     async getAllPosts(req, res) {
@@ -131,6 +166,29 @@ module.exports = {
       )
         .then(async () => {
           const post = await Post.findOne({_id: req.body.id});
+          const dateValue = moment().format('YYYY-MM-DD');
+          let notifications;
+          if (post.user !== req.user._id) {
+            notifications = {
+              senderId: req.user._id,
+              message: `${req.user.username} liked your post.`,
+              created: new Date(),
+              date: dateValue,
+              viewProfile: true,
+              likedPost: true
+            }
+            await User.updateOne(
+              {
+                _id: post.user
+              },
+              {
+                $push: {
+                  notifications
+                }
+              }
+            )
+          }
+          
           return res.status(HttpStatus.OK).json({ message: 'You liked the post', likedPost: post });
         })
         .catch(err =>
@@ -154,8 +212,27 @@ module.exports = {
         }
       )
         .then(async () => {
-          const comments = await Post.findOne({"_id": req.body.postId})
-                                    .populate("userId")
+          const comments = await Post.findOne({"_id": req.body.postId}).populate("user");
+          const dateValue = moment().format('YYYY-MM-DD');
+          if (comments.user._id !== req.user._id) {
+            notifications = {
+              senderId: req.user._id,
+              message: `${req.user.username} commented on your post.`,
+              created: new Date(),
+              date: dateValue,
+              viewProfile: true
+            }
+            await User.updateOne(
+              {
+                _id: comments.user._id
+              },
+              {
+                $push: {
+                  notifications
+                }
+              }
+            )
+          }
           res.status(HttpStatus.OK).json({ message: 'Comment added to post', comments });
         })
         .catch(err => {
