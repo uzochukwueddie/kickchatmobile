@@ -1,4 +1,5 @@
 const moment = require('moment');
+const axios = require('axios');
 
 const User = require('../models/User');
 const Epl = require('../models/EPL');
@@ -208,7 +209,7 @@ module.exports = {
         message: `${req.user.username} added a post.`,
         created: new Date(),
         date: dateValue,
-        viewProfile: true
+        viewProfile: true 
       }
       if (val.blocked === false) {
         await User.updateOne(
@@ -221,8 +222,34 @@ module.exports = {
             }
           }
         );
+
+        await pushNotification(`${val.follower}`, `${req.user.username} added a post.`, `Notification`);
       }
 
+    });
+  },
+
+  pushNotification: async (uid, message, title) => {
+    const data = {
+      app_id: process.env.ONE_SIGNAL_KEY,
+      contents: {en: message},
+      headings: {en: title},
+      filters: [{
+        field: 'tag',
+        key: 'user_id',
+        relation: '=',
+        value: uid
+      }]
+    };
+
+    await axios({
+      method: 'post',
+      url: 'https://onesignal.com/api/v1/notifications',
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: process.env.ONE_SIGNAL_HEADER
+      }
     });
   }
 

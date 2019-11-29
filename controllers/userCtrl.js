@@ -37,6 +37,12 @@ module.exports = {
       .populate('notifications.senderId')
       .populate('blockedUsers.userId')
       .populate('blockedBy.userId')
+      .populate({
+        path : 'posts.postId',
+        populate : {
+          path : 'user'
+        }
+      })
       .then(result => {
         res.status(HttpStatus.OK).json({ message: 'User by id', result });
       })
