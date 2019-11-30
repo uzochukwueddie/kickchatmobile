@@ -2,6 +2,7 @@ const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
 const cloudinary = require('cloudinary');
 const moment = require('moment');
+const mongoose = require('mongoose');
 
 const Post = require('../models/Post');
 const User = require('../models/User');
@@ -48,7 +49,7 @@ module.exports = {
                     }
                   }
                 );
-                Helpers.sendUserNotification(req);
+                Helpers.sendUserNotification(req, post._id);
                 res.status(HttpStatus.OK).json({ message: 'Post created', post });
               })
               .catch(err => {
@@ -84,7 +85,7 @@ module.exports = {
                       }
                     }
                   );
-                  Helpers.sendUserNotification(req);
+                  Helpers.sendUserNotification(req, post._id);
                   res.status(HttpStatus.OK).json({ message: 'Post created', post });
                 })
                 .catch(err => {
@@ -116,7 +117,7 @@ module.exports = {
                     }
                   }
                 );
-                Helpers.sendUserNotification(req);
+                Helpers.sendUserNotification(req, post._id);
                 res.status(HttpStatus.OK).json({ message: 'Post created', post });
               })
               .catch(err => {
@@ -168,14 +169,17 @@ module.exports = {
           const post = await Post.findOne({_id: req.body.id});
           const dateValue = moment().format('YYYY-MM-DD');
           let notifications;
-          if (post.user !== req.user._id) {
+          const postUser = mongoose.Types.ObjectId(`${post.user}`);
+          const reqUser = mongoose.Types.ObjectId(`${req.user._id}`);
+          if (reqUser.equals(postUser) === false) {
             notifications = {
               senderId: req.user._id,
               message: `${req.user.username} liked your post.`,
               created: new Date(),
               date: dateValue,
               viewProfile: true,
-              likedPost: true
+              likedPost: true,
+              postId: req.body.id
             }
             await User.updateOne(
               {
@@ -214,13 +218,16 @@ module.exports = {
         .then(async () => {
           const comments = await Post.findOne({"_id": req.body.postId}).populate("user");
           const dateValue = moment().format('YYYY-MM-DD');
-          if (comments.user._id !== req.user._id) {
+          const commentUser = mongoose.Types.ObjectId(`${comments.user._id}`);
+          const reqUser = mongoose.Types.ObjectId(`${req.user._id}`);
+          if (reqUser.equals(commentUser) === false) {
             notifications = {
               senderId: req.user._id,
               message: `${req.user.username} commented on your post.`,
               created: new Date(),
               date: dateValue,
-              viewProfile: true
+              viewProfile: true,
+              postId: req.body.postId
             }
             await User.updateOne(
               {

@@ -200,7 +200,7 @@ module.exports = {
     return urlObj;
   },
 
-  sendUserNotification: async (req) => {
+  sendUserNotification: async (req, postId) => {
     const user = await User.findOne({_id: req.user._id});
     user.followers.forEach(async val => {
       const dateValue = moment().format('YYYY-MM-DD');
@@ -209,7 +209,8 @@ module.exports = {
         message: `${req.user.username} added a post.`,
         created: new Date(),
         date: dateValue,
-        viewProfile: true 
+        viewProfile: true,
+        postId 
       }
       if (val.blocked === false) {
         await User.updateOne(

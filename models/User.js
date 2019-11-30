@@ -38,7 +38,8 @@ const userSchema = mongoose.Schema({
             likedPost: { type: Boolean, default: false },
             created: { type: Date, default: Date.now() },
             read: { type: Boolean, default: false },
-            date: { type: String, default: '' }
+            date: { type: String, default: '' },
+            postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
         }
     ],
     chatList: [
