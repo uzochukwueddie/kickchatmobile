@@ -262,7 +262,6 @@ module.exports = {
     await User.updateOne(
       {
         _id: req.body.id,
-        'notifications.senderId': { $ne: req.user._id }
       },
       {
         $push: {
