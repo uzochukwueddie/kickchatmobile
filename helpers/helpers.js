@@ -224,12 +224,34 @@ module.exports = {
           }
         );
 
-        await pushNotification(`${val.follower}`, `${req.user.username} added a post.`, `Notification`);
+        // await pushNotification(`${val.follower}`, `${req.user.username} added a post.`, `Notification`);
+        const data = {
+          app_id: process.env.ONE_SIGNAL_KEY,
+          contents: {en: `${req.user.username} added a post.`},
+          headings: {en: `Notification`},
+          filters: [{
+            field: 'tag',
+            key: 'user_id',
+            relation: '=',
+            value: `${val.follower}`
+          }]
+        };
+    
+        await axios({
+          method: 'post',
+          url: 'https://onesignal.com/api/v1/notifications',
+          data,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: process.env.ONE_SIGNAL_HEADER
+          }
+        });
       }
 
     });
   },
 
+  // leave here for now
   pushNotification: async (uid, message, title) => {
     const data = {
       app_id: process.env.ONE_SIGNAL_KEY,
