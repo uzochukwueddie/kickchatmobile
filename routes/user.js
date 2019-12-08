@@ -28,4 +28,6 @@ router.post('/mark/:id', AuthHelper.VerifyToken, UserCtrl.markNotification);
 router.post('/add-city-country', AuthHelper.VerifyToken, UserCtrl.addUserLocation);
 router.post('/dream-team', AuthHelper.VerifyToken, UserCtrl.saveDreamTeam);
 
+router.delete('/delete-all-notifications', AuthHelper.VerifyToken, UserCtrl.deleteAllNotifications);
+
 module.exports = router;

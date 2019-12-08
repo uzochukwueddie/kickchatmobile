@@ -304,6 +304,18 @@ module.exports = {
       });
   },
 
+  async deleteAllNotifications(req, res) {
+    try {
+      await User.updateOne({
+        _id: req.user._id,
+      }, 
+      { $set : {"notifications": [] }} , { multi: true } );
+      res.status(HttpStatus.OK).json({ message: 'Notifications deleted successfully' });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+    }
+  },
+
   async markNotification(req, res) {
     if (!req.body.deleteValue) {
       await User.updateOne(
