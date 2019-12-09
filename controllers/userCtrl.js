@@ -308,8 +308,9 @@ module.exports = {
     try {
       await User.updateOne({
         _id: req.user._id,
-      }, 
-      { $set : {"notifications": [] }} , { multi: true } );
+      }, {
+        "$set": {notifications: []}
+      });
       res.status(HttpStatus.OK).json({ message: 'Notifications deleted successfully' });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
